@@ -60,7 +60,21 @@ def remove_cards(card_list, card_names_to_remove=[]):
 def strip_cards(card_list, keep_keys=['name','desc']):
     '''Pare down the card dictionarys, keeping only the keys we're interested in'''
     
-    pass
+    #First identify the keys to be removed
+    keys_to_remove = []
+    for key in card_list[0].keys():
+        if any([key == x for x in keep_keys]):
+            pass
+        else:
+            keys_to_remove.append(key)
+    
+    cards_to_return = []
+    for card in card_list:
+        for key in keys_to_remove:
+            del card[key] 
+        cards_to_return.append(card)
+        
+    return cards_to_return
 
 
 def write_data(filename, card_list, latex_header=default_latex_header):
