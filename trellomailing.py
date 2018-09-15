@@ -1,5 +1,7 @@
 import json
 
+default_latex_header = "default_latex_header.tex"
+
 def read_json_file(filename):
     '''Reads the json file and returns it without further ado'''
     
@@ -15,6 +17,7 @@ def read_json_file(filename):
         return False
     
     return data
+
 
 def get_card_list(filename=None,data=None,sort=False):
     '''Extracts a list of the cards (each as a dict) from given filename or JSON dict containing a trello board. Sort might do something in future iterations (like sort by labels or lists).'''
@@ -33,14 +36,26 @@ def get_card_list(filename=None,data=None,sort=False):
 
 
 def remove_cards(card_list, card_names_to_remove=[]):
-    '''Remove cards from the list based on the names.'''
+    '''Remove cards from the list based on the names. Exact matches required. This could be nicer.'''
     
     if card_names_to_remove == []:
         return card_list
     
+    cards_to_return = []
+    for i in range(len(card_list)):
+        card=card_list[i]
+        card_name = card['name']
+        for remove_name in card_names_to_remove:
+            keep = True
+            if card_name == remove_name:
+                keep = False
+                break
+        
+        if keep:
+            cards_to_return.append(card)
+            
+    return cards_to_return
     
-    
-    pass
     
 def strip_cards(card_list, keep_keys=['name','desc']):
     '''Pare down the card dictionarys, keeping only the keys we're interested in'''
@@ -49,6 +64,6 @@ def strip_cards(card_list, keep_keys=['name','desc']):
 
 
 def write_data(filename, card_list, latex_header=default_latex_header):
-    '''Takes a pared down card list and prints it to a file with the given LaTeX header. Document should then be compiled with pdflatex.'''
+    '''Takes a pared down card list and writes it to a file with the given LaTeX header. Document should then be compiled with pdflatex.'''
     
     pass
