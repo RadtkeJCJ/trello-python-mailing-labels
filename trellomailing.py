@@ -77,8 +77,8 @@ def strip_cards(card_list, keep_keys=['name','desc']):
     return cards_to_return
 
 
-def process_card_desc(card_list):
-    '''This is really specific to the description field in my case. It strips out anything that isn't the address field in the description'''
+def process_card_desc(card_list,debug=False):
+    '''This is really specific to the description field in my case. It strips out anything that isn't the address field in the description. Debug mode will continue running if it encounters a card it doesn't understand, so you can check a whole board at once'''
     
     for card in card_list:
         desc = card['desc']
@@ -86,7 +86,8 @@ def process_card_desc(card_list):
         if desc.count("Address:") != 1:
             print("I don't understand this card:")
             print(card['name'])
-            raise ValueError
+            if !debug:
+                raise ValueError
         
         #Okay, find the address
         idx = desc.find("Address:")
