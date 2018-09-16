@@ -84,8 +84,8 @@ def process_card_desc(card_list):
         desc = card['desc']
         #First check it has the expected address field and only one address
         if desc.count("Address:") != 1:
-            print("I don't understand this card description:")
-            print(desc)
+            print("I don't understand this card:")
+            print(card['name'])
             raise ValueError
         
         #Okay, find the address
