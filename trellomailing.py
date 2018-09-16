@@ -1,6 +1,6 @@
 import json
 
-default_latex_header = "default_latex_header.tex"
+default_latex_header = "default_latex_header.txt" #I'll eventually write code to make this up with any label, but for now this will do. 
 
 def read_json_file(filename):
     '''Reads the json file and returns it without further ado'''
@@ -77,7 +77,62 @@ def strip_cards(card_list, keep_keys=['name','desc']):
     return cards_to_return
 
 
+def process_card_desc(card_list):
+    '''This is really specific to the description field in my case. It strips out anything that isn't the address field in the description'''
+    
+    for card in card_list:
+        desc = card['desc']
+        #First check it has the expected address field and only one address
+        if desc.count("Address:") != 1:
+            print("I don't understand this card description:")
+            print(desc)
+            raise ValueError
+        
+        #Okay, find the address
+        idx = desc.find("Address:")
+        line_list = desc[idx:].splitlines()
+        #First line needs to go. As does any line after the next line starting with **
+        line_list.pop(0)
+        address = []
+        for line in line_list:
+            if line.startswith('**'):
+                break
+            address.append(line)
+        
+        card['desc'] = '\n'.join(address)
+    
+    return card_list
+                
+
 def write_data(filename, card_list, latex_header=default_latex_header):
     '''Takes a pared down card list and writes it to a file with the given LaTeX header. Document should then be compiled with pdflatex.'''
     
-    pass
+    with open(latex_header, 'r') as f:
+        preamble = f.read()
+        
+    ##I'll need to get the dict keys. 
+    #try:
+        #key_list = card_list[0].keys()
+    #except IndexError:
+        #print("Did you pass in an empty list of cards?")
+        #raise ValueError
+    key_list = ['name', 'desc']
+    
+    with open(filename, 'a') as f:
+        f.write(preamble)
+        
+        for card in card_list:#Have to treat the last card slightly differently
+            for key in key_list:
+                f.write(card[key])
+                f.write('\n')
+            
+            f.write('\n\n')
+            
+        ##Extra white space at the end causes LaTeX problems, hence this
+        #for key in key_list:
+                #f.write(card_list[-1][key])
+        f.write('\end{labels}\n')
+        f.write('\end{document}')
+        
+    
+    return 0
