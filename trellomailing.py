@@ -86,19 +86,26 @@ def process_card_desc(card_list,debug=False):
         if desc.count("Address:") != 1:
             print("I don't understand this card:")
             print(card['name'])
-            if !debug:
+            if debug == False:
                 raise ValueError
         
         #Okay, find the address
         idx = desc.find("Address:")
         line_list = desc[idx:].splitlines()
         #First line needs to go. As does any line after the next line starting with **
-        line_list.pop(0)
+        first_line = line_list.pop(0)
+        
         address = []
+        if len(first_line.strip()) != 10:
+            print("Warning, invalid address format; data may be lost for card:")
+            print(card['name'])
+            print("Attempting fix - please check result")
+            address.append(first_line.strip()[10:])
+            
         for line in line_list:
             if line.startswith('**'):
                 break
-            address.append(line)
+            address.append(line.strip())
         
         card['desc'] = '\n'.join(address)
     
@@ -127,11 +134,6 @@ def write_data(filename, card_list, latex_header=default_latex_header):
                 f.write(card[key])
                 f.write('\n')
             
-            f.write('\n\n')
-            
-        ##Extra white space at the end causes LaTeX problems, hence this
-        #for key in key_list:
-                #f.write(card_list[-1][key])
         f.write('\end{labels}\n')
         f.write('\end{document}')
         
